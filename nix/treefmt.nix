@@ -40,11 +40,12 @@
         "*.js"
       ];
 
-      # Files without a formatter, and test fixtures that must stay byte for
-      # byte as they are. slides.md is the presentation's own syntax, which
-      # only looks like Markdown.
+      # Files without a formatter, patches, and test fixtures that must stay
+      # byte for byte as they are. slides.md is the presentation's own
+      # syntax, which only looks like Markdown.
       settings.global.excludes = [
         "*.glb"
+        "*.patch"
         "*.png"
         "*.txt"
         ".gitignore"
