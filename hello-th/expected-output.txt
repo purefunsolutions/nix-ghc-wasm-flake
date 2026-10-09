@@ -1,0 +1,3 @@
+Hello from Template Haskell!
+2432902008176640000
+Hello, wasm! (spliced in from another module)
