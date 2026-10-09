@@ -20,14 +20,19 @@
           # GitHub-flavoured Markdown: plain mdformat would mangle tables.
           plugins = ps: [ ps.mdformat-gfm ];
         };
+        ormolu.enable = true;
+        cabal-fmt.enable = true;
+        clang-format.enable = true;
       };
 
       # Tables as they are written, without padding every column to the
       # width of its longest cell.
       settings.formatter.mdformat.options = [ "--compact-tables" ];
 
-      # Files without a formatter.
+      # Files without a formatter, and test fixtures that must stay byte for
+      # byte as they are.
       settings.global.excludes = [
+        "*.txt"
         ".gitignore"
         "flake.lock"
       ];
