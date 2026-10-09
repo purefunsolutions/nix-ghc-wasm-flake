@@ -1,0 +1,27 @@
+{
+  "nodes": {
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1791577889,
+        "narHash": "sha256-1YNpIs1vmzobUEHjjM/JHkEdRnce705KmKxpbZY9h5w=",
+        "owner": "mikatammi",
+        "repo": "nixpkgs",
+        "rev": "93f4824cc1ee3ba612f8aa20610929af38ad64e5",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mikatammi",
+        "ref": "ghcwasmhacking",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "nixpkgs": "nixpkgs"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
