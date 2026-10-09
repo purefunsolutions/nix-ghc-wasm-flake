@@ -1,0 +1,15 @@
+cabal-version:      3.0
+name:               hello-pure
+version:            0.1.0.0
+synopsis:           Minimal pure-Haskell hello world for GHC's wasm backend
+license:            MIT
+author:             Mika Tammi
+maintainer:         mikatammi@gmail.com
+category:           Example
+build-type:         Simple
+
+executable hello-pure
+  main-is:          Main.hs
+  build-depends:    base
+  default-language: Haskell2010
+  ghc-options:      -Wall

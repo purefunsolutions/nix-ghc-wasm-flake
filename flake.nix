@@ -40,6 +40,9 @@
           # Setup.hs, which no binary cache has.)
           compilers = lib.genAttrs ghcs (ghc: wasm.buildPackages.haskell.compiler.${ghc});
           hellos = lib.genAttrs ghcs (ghc: wasm.haskell.packages.${ghc}.callPackage ./nix/hello.nix { });
+          hellosPure = lib.genAttrs ghcs (
+            ghc: wasm.haskell.packages.${ghc}.callPackage ./nix/hello-pure.nix { }
+          );
         };
 
       # Run a hello build under wasmtime and compare its output.
@@ -54,6 +57,9 @@
       runHello =
         pkgs: name: hello:
         runWasm pkgs name hello ./hello/expected-output.txt;
+      runHelloPure =
+        pkgs: name: hello:
+        runWasm pkgs "pure-${name}" hello (builtins.toFile "expected" "Hello, World!\n");
     in
     {
       packages = forAllSystems (
@@ -62,10 +68,12 @@
           inherit (wasmFor pkgs)
             compilers
             hellos
+            hellosPure
             ;
         in
         lib.mapAttrs' (ghc: drv: lib.nameValuePair "wasm-${ghc}" drv) compilers
         // lib.mapAttrs' (ghc: drv: lib.nameValuePair "hello-${ghc}" drv) hellos
+        // lib.mapAttrs' (ghc: drv: lib.nameValuePair "hello-pure-${ghc}" drv) hellosPure
         // {
           default = hellos.ghc912;
         }
@@ -77,9 +85,13 @@
           inherit (wasmFor pkgs)
             wasm
             hellos
+            hellosPure
             ;
         in
         lib.mapAttrs' (ghc: drv: lib.nameValuePair "hello-${ghc}" (runHello pkgs ghc drv)) hellos
+        // lib.mapAttrs' (
+          ghc: drv: lib.nameValuePair "hello-pure-${ghc}" (runHelloPure pkgs ghc drv)
+        ) hellosPure
         // {
           # Toolchain sanity checks from nixpkgs: C/C++ against wasilibc, and
           # libffi-wasm's own test suite.
