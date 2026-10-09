@@ -24,6 +24,8 @@
         cabal-fmt.enable = true;
         clang-format.enable = true;
         prettier.enable = true;
+        shellcheck.enable = true;
+        shfmt.enable = true;
       };
 
       # Tables as they are written, without padding every column to the
