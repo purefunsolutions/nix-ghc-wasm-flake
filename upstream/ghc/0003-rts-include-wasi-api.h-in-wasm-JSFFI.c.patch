@@ -1,0 +1,32 @@
+From 286dd329826edb368d5070688c1fed20e9e90176 Mon Sep 17 00:00:00 2001
+From: Mika Tammi <mikatammi@gmail.com>
+Date: Fri, 9 Oct 2026 14:26:09 +0200
+Subject: [PATCH] rts: include <wasi/api.h> in wasm JSFFI.c
+
+JSFFI.c calls __wasi_args_sizes_get()/__wasi_args_get() and uses
+__wasi_errno_t, but relied on <wasi/api.h> being included transitively by
+other libc headers. Newer wasi-libc (e.g. wasi-sdk 32) moved the preview 1
+API to <wasi/wasip1.h>, which <wasi/api.h> includes for __wasip1__, and no
+longer pulls it into the common headers, so building the RTS fails with
+
+    rts/wasm/JSFFI.c:100:3: error: use of undeclared identifier '__wasi_errno_t'
+
+Include the header explicitly.
+
+Assisted-by: Claude Code (claude-opus-5-5)
+---
+ rts/wasm/JSFFI.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/rts/wasm/JSFFI.c b/rts/wasm/JSFFI.c
+index 69f9fd0..45f1226 100644
+--- a/rts/wasm/JSFFI.c
++++ b/rts/wasm/JSFFI.c
+@@ -6,6 +6,7 @@
+ #include "sm/Sanity.h"
+ 
+ #include <sysexits.h>
++#include <wasi/api.h>
+ 
+ #if defined(__wasm_reference_types__)
+ 

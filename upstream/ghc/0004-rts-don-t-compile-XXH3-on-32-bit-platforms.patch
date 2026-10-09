@@ -1,0 +1,40 @@
+From d296250894f32d2e7e89e094abc67497fe3164b0 Mon Sep 17 00:00:00 2001
+From: Mika Tammi <mikatammi@gmail.com>
+Date: Fri, 9 Oct 2026 15:17:50 +0200
+Subject: [PATCH] rts: don't compile XXH3 on 32-bit platforms
+
+hashBuffer only uses XXH3 when WORD_SIZE_IN_BITS == 64 and XXH32
+otherwise, so XXH3 is dead code on 32-bit platforms.
+
+On wasm32 it is also harmful: with -msimd128, xxhash 0.8.3 includes
+<arm_neon.h> whenever __has_include(<arm_neon.h>) succeeds, expecting
+SIMDe's NEON emulation as provided by Emscripten. A clang that is built
+with ARM targets ships its own arm_neon.h in the resource directory,
+which errors out for wasm:
+
+    rts/xxhash.h:3852: arm_neon.h:28:2: error: "<arm_neon.h> is intended only for ARM and AArch64 targets"
+
+Define XXH_NO_XXH3 when the word size isn't 64 bits.
+
+Assisted-by: Claude Code (claude-opus-5-5)
+---
+ rts/Hash.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/rts/Hash.c b/rts/Hash.c
+index 8b449f2..8900fbe 100644
+--- a/rts/Hash.c
++++ b/rts/Hash.c
+@@ -14,6 +14,12 @@
+ #include "Hash.h"
+ #include "RtsUtils.h"
+ 
++#if WORD_SIZE_IN_BITS != 64
++/* XXH3 is only used on 64-bit platforms (see hashBuffer). Leaving it out
++ * also keeps xxhash from including <arm_neon.h> for wasm SIMD128 (meant for
++ * SIMDe), which fails with clangs that ship ARM headers. */
++#define XXH_NO_XXH3
++#endif
+ #define XXH_INLINE_ALL
+ 
+ #include "xxhash.h"

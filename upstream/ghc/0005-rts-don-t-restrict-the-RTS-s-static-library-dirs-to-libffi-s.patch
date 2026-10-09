@@ -1,0 +1,43 @@
+From d3536ed21c47af11fc7d0a408cfa74bb08364918 Mon Sep 17 00:00:00 2001
+From: Mika Tammi <mikatammi@gmail.com>
+Date: Fri, 9 Oct 2026 22:30:26 +0200
+Subject: [PATCH] rts: don't restrict the RTS's static library dirs to libffi's
+
+Since "Use libffi-clib" (0f53ccc6), rts.buildinfo sets
+
+    extra-lib-dirs-static: @FFILibDir@
+
+When configure is given --with-ffi-libraries, this list is non-empty,
+and Cabal then no longer falls back to extra-lib-dirs for the static
+library dirs (extraLibDirsStaticOrFallback in
+Distribution.Simple.Register). The directories hadrian passes with
+--extra-lib-dirs (for libnuma, libdw and libzstd) are then missing from
+the RTS's library-dirs-static. Linking any executable then fails when
+those libraries aren't on the linker's default search path, e.g. with
+nixpkgs on x86_64-linux:
+
+    ld.gold: error: cannot find -lelf
+    ld.gold: error: cannot find -ldw
+    ld.gold: error: cannot find -lnuma
+
+GHC 9.14 doesn't set static library dirs for the RTS and isn't
+affected. Drop the line, so the static library dirs fall back to
+extra-lib-dirs again, which also contains libffi's directory.
+
+Assisted-by: Claude Code (claude-opus-5-5)
+---
+ rts/rts.buildinfo.in | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/rts/rts.buildinfo.in b/rts/rts.buildinfo.in
+index bb42c4e..1e62e08 100644
+--- a/rts/rts.buildinfo.in
++++ b/rts/rts.buildinfo.in
+@@ -2,4 +2,3 @@ extra-libraries: @EXTRA_LIBS@
+ extra-libraries-static: @EXTRA_LIBS@
+ include-dirs: @FFIIncludeDir@
+ extra-lib-dirs: @FFILibDir@
+-extra-lib-dirs-static: @FFILibDir@
+-- 
+2.54.0 (Apple Git-157)
+

@@ -1,0 +1,70 @@
+From bdd7962feab96ab7a69b2ebd9afc196075279239 Mon Sep 17 00:00:00 2001
+From: Mika Tammi <mikatammi@gmail.com>
+Date: Fri, 9 Oct 2026 13:58:30 +0200
+Subject: [PATCH] configure: accept wasip1 as the OS part of WASI target
+ triples
+
+WASI preview 1 targets are nowadays spelled `wasm32-*-wasip1` by LLVM,
+wasi-sdk and distributions (e.g. nixpkgs uses `wasm32-unknown-wasip1`).
+GHC_CONVERT_OS and ghc-toolchain only accepted `wasi`, so configuring a
+cross compiler for such a triple failed with "Unknown OS wasip1".
+
+Treat `wasip1` like `wasi`, but keep it in the LLVM target triple, which
+is what configure passes to the C compiler via `--target` when it
+supports that option. Otherwise clang would be told to target
+`wasm32-unknown-wasi` and look for its runtime libraries (e.g.
+compiler-rt's builtins) in the wrong per-target directories of a
+toolchain set up for `wasm32-unknown-wasip1`.
+
+Preview 2 (`wasip2`) is a different ABI and deliberately not accepted.
+
+Assisted-by: Claude Code (claude-opus-5-5)
+---
+ m4/ghc_convert_os.m4                                 | 3 ++-
+ m4/ghc_llvm_target.m4                                | 6 ++++++
+ utils/ghc-toolchain/src/GHC/Toolchain/ParseTriple.hs | 1 +
+ 3 files changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/m4/ghc_convert_os.m4 b/m4/ghc_convert_os.m4
+index b39c20c..8146960 100644
+--- a/m4/ghc_convert_os.m4
++++ b/m4/ghc_convert_os.m4
+@@ -49,7 +49,8 @@ AC_DEFUN([GHC_CONVERT_OS],[
+       nto-qnx*)
+         $3="nto-qnx"
+         ;;
+-      wasi)
++      # wasip1 is how LLVM, wasi-sdk and others spell WASI preview 1 nowadays
++      wasi|wasip1)
+         $3="wasi"
+         ;;
+       ghcjs*)
+diff --git a/m4/ghc_llvm_target.m4 b/m4/ghc_llvm_target.m4
+index 52d6674..7d414e2 100644
+--- a/m4/ghc_llvm_target.m4
++++ b/m4/ghc_llvm_target.m4
+@@ -40,6 +40,12 @@ AC_DEFUN([GHC_LLVM_TARGET], [
+         GHC_CONVERT_VENDOR([$3],[llvm_target_vendor])
+         llvm_target_os="$4"
+         ;;
++      # Likewise keep wasip1, so that the triple passed to the C compiler via
++      # --target matches the one the toolchain was configured for.
++      wasip1)
++        GHC_CONVERT_VENDOR([$3],[llvm_target_vendor])
++        llvm_target_os="$4"
++        ;;
+   esac
+   $5="$llvm_target_cpu-$llvm_target_vendor-$llvm_target_os"
+ ])
+diff --git a/utils/ghc-toolchain/src/GHC/Toolchain/ParseTriple.hs b/utils/ghc-toolchain/src/GHC/Toolchain/ParseTriple.hs
+index 04dda9e..398bf58 100644
+--- a/utils/ghc-toolchain/src/GHC/Toolchain/ParseTriple.hs
++++ b/utils/ghc-toolchain/src/GHC/Toolchain/ParseTriple.hs
+@@ -80,6 +80,7 @@ parseOs os =
+       "aix" -> pure OSAIX
+       "gnu" -> pure OSHurd
+       "wasi" -> pure OSWasi
++      "wasip1" -> pure OSWasi
+       "ghcjs" -> pure OSGhcjs
+       _ -> throwE $ "Unknown operating system " ++ os
+ 
