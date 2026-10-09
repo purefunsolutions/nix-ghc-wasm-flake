@@ -20,6 +20,7 @@
         );
 
       hellos = forGhcs "hello" (hp: hp.callPackage ./hello { });
+      hellosPure = forGhcs "hello-pure" (hp: hp.callPackage ./hello-pure { });
 
       # Runs each program under wasmtime with the arguments "a b" and
       # compares its output.
@@ -36,11 +37,16 @@
         );
     in
     {
-      packages = hellos // {
-        default = hellos.hello-ghc912;
-      };
+      packages =
+        hellos
+        // hellosPure
+        // {
+          default = hellos.hello-ghc912;
+        };
 
-      checks = runEach ./hello/expected-output.txt hellos;
+      checks =
+        runEach ./hello/expected-output.txt hellos
+        // runEach (builtins.toFile "expected" "Hello, World!\n") hellosPure;
 
       apps = {
         default = {
