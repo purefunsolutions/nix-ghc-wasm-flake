@@ -38,6 +38,13 @@
    `results/notes.md` to final findings.
 7. The NUC copy: move it from `~/ghcwasm` to `~/ghc-wasm-flake`?
 
+## Developer tooling (asked at MuniHac)
+
+9. **Haskell Language Server** for wasm projects: what works today, and what nixpkgs and this
+   flake could provide. See `docs/tooling.md`.
+10. **Debug tools** for wasm programs: GHCi and its debugger, RTS tracing and eventlog,
+    profiling, and native-level debuggers. See `docs/tooling.md`.
+
 ## Coordination drafts
 
 8. A status comment for nixpkgs #225000; notes for ilkecan (#558928 works as-is, and a
