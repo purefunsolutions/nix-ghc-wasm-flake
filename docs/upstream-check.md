@@ -22,6 +22,12 @@ Related upstream items worth linking:
   It doesn't fix the wrong template values, though.
 - **#26434 / !14935** (static linking support, which introduced the static fields) and **#20759**
   (open since 2021: wire up `library-dirs-static`). Context for `0005`.
+- **#26914** (closed 2026-07-27): in ghc.nix, the `mostly_static` test failed with
+  `cannot find -l:libnuma.a`, and the test was disabled for setups without a static toolchain.
+  It's not the same bug (that test asks for static `libnuma.a`), but it's the same
+  missing-directory territory seen from a Nix environment. Worth linking from the `0005` MR,
+  which also needs a backport to `ghc-10.0`: the regression is on that branch, and
+  10.0.1-alpha1 is already tagged.
 - **#26965** (open): `dyld.mjs` needs Node ≥ 22.18 (`import.meta.main`). nixpkgs' node 24 is fine.
 - **#27079 / !15770**: `dyld.mjs` was broken on the ghc-9.12 branch. It's fixed there; our 9.12
   TH works.
