@@ -331,3 +331,13 @@ Findings while building. Raw logs are in `results/logs/` (not committed).
     (`.override { ghcSrc = srcOnly { …; patches = old ++ [ diff ]; }; }`). Hadrian is a separate
     derivation built from `ghcSrc`. Adding the patch with `overrideAttrs` patches only the
     compiler and gives `No entry for "ghc unit-id" in …/stage0/lib/settings`.
+- **Haddock bug bisected: the first bad commit is GHC `23c9b6c392` "hadrian: Build stage 2 cross compilers"**
+  (written 2023-12-21, merged 2026-06-20; not in `ghc-10.0`).
+  - Test: nixpkgs' JS-backend cross GHC HEAD (x86_64-linux, NUC) built from a given GHC commit
+    with the haddock workaround removed (`~/bisect-haddock/bisect.nix`, sources via
+    `nix-prefetch-git` because `builtins.fetchGit` can't fetch GHC's submodules at these
+    commits).
+  - Its parent `521e55bf69` builds completely, docs index included. `23c9b6c392` fails in
+    `Run Haddock BuildIndex` with `…/stage0/lib/package.conf.d/package.cache:
+    GHC.Unit.Database.readPackageDb: inappropriate type (not enough bytes)`.
+  - Still open for the GHC issue: why GHC's own cross CI doesn't hit it.
