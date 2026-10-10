@@ -1,33 +1,23 @@
 # Draft: test report for GHC !16790 (not posted)
 
-For https://gitlab.haskell.org/ghc/ghc/-/merge_requests/16790 ("compiler: ensure cross ghc --info
-output target unid ids", fixes #27919), by Cheng Shao. Paste as a comment on the MR, or tell
-Cheng in person. Written 2026-10-10 after the review threads with Teo Camarasu; it doesn't cover
-the open `compiler/Setup.hs` question, and says so.
+For https://gitlab.haskell.org/ghc/ghc/-/merge_requests/16790, by Cheng Shao. The text to post
+starts after the line.
 
 ---
 
-Independent confirmation from a different toolchain: I tested the MR at `95f24e6b` on a wasm
-cross GHC that nixpkgs builds from source, with stock LLVM 21 and unmodified upstream wasi-libc
-32 (target `wasm32-unknown-wasip1`), `--hash-unit-ids`, host aarch64-darwin. The MR is applied
-on top of GHC master `556db2f3` (2026-08-10), which is what nixpkgs' `ghcHEAD` tracks. It applies
-there with only line offsets.
+I tested this MR (`95f24e6b`) on a different toolchain: a wasm cross GHC that nixpkgs builds
+from source with stock LLVM 21 and upstream wasi-libc 32, with `--hash-unit-ids`, on
+aarch64-darwin. The MR is applied on top of master `556db2f3`, the commit nixpkgs' `ghcHEAD`
+currently uses.
 
-Before: `ghc --info` and `ghc-pkg field <pkg> id` disagree on all three units (for example
-`ghc-internal-10.100.0-169f` in `--info` against `ghc-internal-10.100.0-ddf4` in the package
-db). cabal-install 3.18.1.0 then can't solve even a base-only executable, with
-`active-repositories: :none`:
+Without the MR, I get the bug from #27919: `ghc --info` and `ghc-pkg` report different unit ids
+for `base`, `ghc-internal` and `ghc`, and cabal-install 3.18.1.0 can't build even a base-only
+executable (`Cabal-7107`, "requires installed instance with unit id ghc-internal-10.100.0-169f").
 
-```
-[__1] trying: base-4.23.0.0/installed-ffb7 (dependency of hello-pure)
-[__2] next goal: ghc-internal (dependency of base)
-[__2] rejecting: ghc-internal-10.100.0/installed-ddf4 (constraint from non-reinstallable package requires installed instance with unit id ghc-internal-10.100.0-169f)
-```
+With the MR, all three unit ids match, `cabal build` succeeds, and the resulting `.wasm` runs
+under wasmtime.
 
-After: `base`, `ghc-internal` and `ghc` agree between `--info` and `ghc-pkg`, `cabal build`
-succeeds, and the resulting `.wasm` runs under wasmtime.
-
-This only exercises the `ghc` + `ghc-pkg` + cabal-install path on an installed bindist-style
-tree; it says nothing about the `compiler/Setup.hs` / cabal-reinstall question from the review.
+I only tested the installed compiler with cabal-install; this doesn't say anything about the
+`compiler/Setup.hs` question from the review.
 
 (Tested with the help of Claude Code.)
