@@ -194,6 +194,47 @@ hadrian/build --flavour=release[+text_simdutf] --docs=no-sphinx-pdfs --docs=no-s
     ghc-9.14 is upstream + ~107 backports). Its default is 9.14.
   - haskell.nix builds upstream 9.12.4/9.14.1 for wasm in CI.
 
+## 3a. How ghc-wasm-meta's binaries are built (checked 2026-10-10)
+
+ghc-wasm-meta builds nothing itself. Every binary it installs is a GitLab CI artifact, mirrored to
+GitHub and then pinned:
+
+1. **Toolchain.** [haskell-wasm/wasi-sdk](https://gitlab.haskell.org/haskell-wasm/wasi-sdk)
+   (project 3212, with the LLVM and wasi-libc forks of §1.2) builds `wasi-sdk-29.0-<host>.tar.gz`
+   for x86_64/aarch64 Linux and macOS in its own CI. libffi-wasm comes from project 3214's CI.
+2. **GHC master** (the `wasm32-wasi-ghc-gmp`/`-native`/`-unreg` flavours) is built by upstream
+   GHC's own CI (`ghc/ghc`, project 1): job
+   `x86_64-linux-alpine3_23-wasm-cross_wasm32-wasi-release+host_fully_static+text_simdutf` and its
+   native-bignum and unregisterised variants. This is x86_64 Linux only, with fully static host
+   binaries, in an Alpine image that has ghc-wasm-meta's toolchain preinstalled
+   (`.gitlab/ci.sh` sources `/home/ghc/.ghc-wasm/env`).
+3. **GHC 9.10/9.12/9.14 and all other hosts** are built by the CI of the
+   [haskell-wasm/ghc](https://gitlab.haskell.org/haskell-wasm/ghc) fork (project 224). Its
+   `ghc-9.14` branch is upstream's plus 107 commits: backports, plus CI changes such as
+   "ci: multi-project pipeline for wasm". Its `gen_ci.hs` adds `wasm_aarch64_linux_jobs` (Alpine,
+   fully static) and `wasm_aarch64_darwin_jobs`/`wasm_x64_darwin_jobs` (darwin runners, not static).
+   Its `ci.sh` downloads ghc-wasm-meta at `$GHC_WASM_META_BRANCH` and runs
+   `SKIP_GHC=1 ./setup.sh` to install the toolchain, then configures with
+   `--target=wasm32-wasi --with-intree-gmp --with-system-libffi`. Hadrian runs with
+   `--docs=no-sphinx-pdfs --docs=no-sphinx-man`.
+4. **Mirroring.** GitLab artifacts expire, so
+   [haskell-wasm/ghc-wasm-bindists](https://github.com/haskell-wasm/ghc-wasm-bindists) has a
+   manually dispatched GitHub Actions workflow (`mirror.yml`). It runs the repository's Haskell
+   app to download the artifacts, uploads them as a GitHub release tagged with a UTC timestamp
+   (e.g. `20260731T193144`), and commits `meta.json` (`originalUrl`, `mirrorUrl`, `sriHash`,
+   `ghcSubdir`).
+5. **Pinning.** ghc-wasm-meta's `utils/autogen.js` (Deno) reads that `meta.json`, plus the latest
+   GitHub releases of haskell-wasm's static node, binaryen and wasm-tools builds, and writes
+   `autogen.json`. `setup.sh` and the Nix flake (`pkgs/wasm32-wasi-ghc.nix`, `pkgs/wasi-sdk.nix`)
+   install from that.
+
+So the toolchain and GHC are bootstrapped in a loop: the GHC CI jobs install the toolchain via
+ghc-wasm-meta, and their artifacts are pinned back into ghc-wasm-meta. As of this check, the pins
+are GHC master `10.1.20260729` and 9.14 `9.14.1.20260731`, mirrored 2026-07-31, and wasi-sdk 29.0,
+mirrored 2025-12-19. ghc-wasm-meta's `tests/` (agda, pandoc, ormolu, fourmolu, shellcheck, miso,
+reflex-dom, network, foundation, flatparse, hashtables, unix-compat, xxhash-ffi, …) list the
+packages upstream checks on wasm, which makes a good list for nixpkgs package jobs.
+
 ## 4. nixpkgs: what #225000 did and where it stands now
 
 PR [#225000](https://github.com/NixOS/nixpkgs/pull/225000) targeted `haskell-updates`, has 8
