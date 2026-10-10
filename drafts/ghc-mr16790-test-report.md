@@ -1,7 +1,7 @@
-# Draft: test report for GHC !16790 (not posted)
+# Test report for GHC !16790 (posted 2026-10-10)
 
-For https://gitlab.haskell.org/ghc/ghc/-/merge_requests/16790, by Cheng Shao. The text to post
-starts after the line.
+For https://gitlab.haskell.org/ghc/ghc/-/merge_requests/16790, by Cheng Shao. Mika posted the
+text below as a comment on the MR.
 
 ---
 
@@ -19,5 +19,3 @@ under wasmtime.
 
 I only tested the installed compiler with cabal-install; this doesn't say anything about the
 `compiler/Setup.hs` question from the review.
-
-(Tested with the help of Claude Code.)
