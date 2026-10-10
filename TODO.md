@@ -48,3 +48,6 @@
 - A narrow `lld` variant with the wasm-ld patch (llvm#129007), only if large TH libraries hit
   V8's function size limit.
 - `wasilibc` performance flags (SIMD string functions, `-O3`) as a separate nixpkgs change.
+- The JS backend (`pkgsCross.ghcjs`) on aarch64-darwin and aarch64-linux: untested. Hydra skips
+  aarch64-linux (output over 3 GB) and hasn't built darwin since 2024, so it's unknown whether the
+  JS backend builds on macOS at all. Only x86_64-linux is checked, on the NUC.
