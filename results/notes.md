@@ -291,3 +291,20 @@ Findings while building. Raw logs are in `results/logs/` (not committed).
     native derivations are identical.
   - A verification build of `pkgsCross.ghcjs.haskell.packages.ghcHEAD.hello` is running on the
     NUC.
+- **The haddock bug's history (2026-10-10).**
+  - No GHC issue and no nixpkgs issue mentions it. Searched GitLab for `readPackageDb`,
+    "inappropriate type", haddock + cross; GitHub nixpkgs for `readPackageDb` and "not enough
+    bytes".
+  - Hydra's `pkgsCross.ghcjs.haskell.packages.ghcHEAD.ghc` (x86_64-linux) built fine on every GHC
+    master snapshot from early 2025 up to **10.1.20260513** (GHC `38b76b2f`). It has failed on
+    every build since nixpkgs moved to **10.1.20260810** (GHC `556db2f3`) on 2026-08-15. So it's a
+    GHC master regression from between those two snapshots, not present in 9.x.
+  - Prime suspect: `23c9b6c392` "hadrian: Build stage 2 cross compilers" (written 2023, merged
+    2026-06-20). It restructures how cross compilers are staged and adds a `binary-dist-dir-cross`
+    target, and the failing step reads `_build/stage1/lib/../../stage0/lib/package.conf.d`. It is
+    **not** in `ghc-10.0`, so 10.0 is probably unaffected; it's master/10.2 only. That's the
+    opposite of patch 0005, which is in 10.0. Not bisected.
+  - Open question for the issue: GHC's own cross CI jobs (`binary-dist`, with haddocks) seem
+    unaffected. nixpkgs uses `binary-dist-dir`, which picks the cross configuration implicitly,
+    so the target alone doesn't explain it. Possibly the bootstrap compiler writing stage0's
+    package database: its binary format changed with `1ac1a541`.
