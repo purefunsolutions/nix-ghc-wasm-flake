@@ -84,7 +84,7 @@ below were built on the former separate branch, `ghcwasmhacking-th`.)
 | RTS `JSFFI.c` uses WASI API without `<wasi/api.h>` (needed with wasilibc 32) | GHC upstream + nixpkgs patch | fixed in branch; `upstream/ghc/0003-…` |
 | xxhash includes `<arm_neon.h>` for wasm SIMD (nixpkgs clang ships it) | GHC upstream + nixpkgs patch | fixed in branch; `upstream/ghc/0004-…` |
 | GHC ≥ 10 host templates hardcode `use-lib-rt = YES` (`system.config.host.in`) and `tgtOtool`/`tgtInstallNameTool = Nothing` (`default.host.target.in`); both break macOS hosts | GHC upstream; nixpkgs patches the templates | worked around (darwin + HEAD only) |
-| GHC ≥ 10 cross: haddock's index step can't read the stage0 package db (`readPackageDb: … not enough bytes`) | GHC/hadrian upstream | worked around: no haddocks for wasm GHC ≥ 10 |
+| GHC ≥ 10 cross: haddock's index step can't read the stage0 package db (`readPackageDb: … not enough bytes`) | GHC/hadrian upstream | worked around: no haddocks for any cross GHC ≥ 10. The JS backend's GHC HEAD fails on Hydra the same way |
 | `LD` = lld in ELF mode | nixpkgs common-hadrian | in branch |
 | `useLLVM`/native bignum/terminfo/PIC/dynamic-system-linker defaults | nixpkgs common-hadrian | in branch |
 | GHC ≥ 10 RTS: `extra-lib-dirs-static: @FFILibDir@` disables Cabal's fallback, so executables can't find libnuma/libdw; native ghcHEAD can't link hello world, cross `Setup.hs` fails | GHC upstream (`upstream/ghc/0005-…`) + nixpkgs patch | fixed in branch; verified on x86_64-linux and aarch64-linux |

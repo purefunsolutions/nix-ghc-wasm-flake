@@ -279,3 +279,15 @@ Findings while building. Raw logs are in `results/logs/` (not committed).
 - **aarch64-linux after the fold and fix: 9.12, 9.14 and HEAD all green.** HEAD built the
   patched native ghcHEAD and the wasm GHC 10.1, then hello-pure, hello-wasm and hello-th, and all
   three wasmtime checks pass (17 derivations, about 40 min on the VM).
+- **The JS backend's GHC HEAD fails on Hydra with the same haddock bug.**
+  - Hydra build 347803739 (`pkgsCross.ghcjs.haskell.packages.ghcHEAD.ghc`, x86_64-linux) builds
+    for 1h01m and then dies in `Run Haddock BuildIndex` with the same
+    `…/stage0/lib/package.conf.d/package.cache: GHC.Unit.Database.readPackageDb: inappropriate type
+    (not enough bytes)` as our wasm build. The full log is at
+    `https://hydra.nixos.org/build/<id>/log/raw`; failed builds' logs aren't in cache.nixos.org.
+  - So it's a GHC 10 problem in every cross build. The workaround now applies to all cross
+    compilers (`targetPlatform != hostPlatform`), rewritten into the same nixpkgs commit (now
+    "no haddock docs for cross GHC >= 10"). Only the JS GHC HEAD derivation changes; wasm and
+    native derivations are identical.
+  - A verification build of `pkgsCross.ghcjs.haskell.packages.ghcHEAD.hello` is running on the
+    NUC.

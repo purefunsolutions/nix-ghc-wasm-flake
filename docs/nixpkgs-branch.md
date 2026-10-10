@@ -26,7 +26,7 @@ Local reference branches with the original PRs: `pr/225000`, `pr/561449`, `pr/55
 | 11 | `haskell.compiler: fix the wasm RTS build against wasilibc 32` | Mika Tammi | haskell-updates; RTS patch also for GHC (`upstream/ghc/0003-…`) |
 | 12 | `haskell.compiler: don't compile XXH3 into the wasm RTS` | Mika Tammi | haskell-updates; RTS patch also for GHC (`upstream/ghc/0004-…`) |
 | 13 | `haskell.compiler: fix the darwin host config of wasm GHC >= 10` | Mika Tammi | haskell-updates; GHC issue: the host templates should use configure's results (`use-lib-rt`, otool, install_name_tool) |
-| 14 | `haskell.compiler: no haddock docs for wasm GHC >= 10` | Mika Tammi | haskell-updates; hadrian issue: the haddock index step reads the stage0 package db in GHC 10 cross builds |
+| 14 | `haskell.compiler: no haddock docs for cross GHC >= 10` | Mika Tammi | haskell-updates, independent of wasm: it also fixes the JS backend's GHC HEAD on Hydra. Hadrian issue: the haddock index step reads the stage0 package db in GHC 10 cross builds |
 | 15 | `haskell: enable shared libraries for GHC's wasm interpreter` | ilkecan (cherry-pick of #558928, unchanged) | #558928 |
 | 16 | `libffi-wasm: also build libffi.so` | Mika Tammi | suggest for #561449 (dyld.mjs loads `libffi.so`) |
 | 17 | `haskell.compiler: set up GHC's wasm interpreter for Template Haskell` | Mika Tammi | haskell-updates. Contents: the node wrapper for `dyld.mjs`'s interpreter line, and the dyld library dir patch, which would ideally become a GHC option |
