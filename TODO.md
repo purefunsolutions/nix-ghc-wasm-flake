@@ -28,6 +28,9 @@
    GPG-sign before pushing anything.
 5. Issues for GHC 10's darwin host settings (librt, leading underscore, otool,
    install_name_tool; related: #26720) and the haddock index failure in GHC 10 cross builds.
+   For the latter: master-only (not in `ghc-10.0`), from between the 2026-05-13 and 2026-08-10
+   snapshots. Prime suspect `23c9b6c392` "hadrian: Build stage 2 cross compilers"; worth a bisect
+   and a look at why GHC's own cross CI doesn't hit it (see `results/notes.md`).
 
 ## ghc-wasm-flake
 
