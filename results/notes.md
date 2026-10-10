@@ -308,3 +308,11 @@ Findings while building. Raw logs are in `results/logs/` (not committed).
     unaffected. nixpkgs uses `binary-dist-dir`, which picks the cross configuration implicitly,
     so the target alone doesn't explain it. Possibly the bootstrap compiler writing stage0's
     package database: its binary format changed with `1ac1a541`.
+- **JS backend GHC HEAD on x86_64-linux (NUC): green.** `pkgsCross.ghcjs.haskell.packages.ghcHEAD.hello`
+  builds with the nixpkgs branch (`a6b14f10857e`): the JS GHC 10.1.20260810 compiler, which uses
+  the haddock workaround, and `hello`, whose `Setup.hs` links thanks to patch 0005. Both fixes
+  are confirmed for JS too.
+- **Bisecting the haddock bug** (in a separate worktree, `~/ghc-bisect`, so `~/ghc` stays free for
+  the patch-0005 session). The builds run on the NUC from `~/bisect-haddock/bisect.nix`: nixpkgs'
+  JS GHC HEAD with `ghcSrc` replaced by any GHC commit (`builtins.fetchGit` with submodules) and
+  `--docs=no-haddocks` removed. First test: suspect `23c9b6c392` against its parent `521e55bf69`.
