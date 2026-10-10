@@ -90,6 +90,9 @@ Delete one line from `rts/rts.buildinfo.in`:
      hadrian. Compare `library-dirs-static` in `_build/stage1/lib/package.conf.d/rts-*.conf`
      with and without the patch, then link hello world outside the shell environment.
    - Or **through nixpkgs**: override `haskell.compiler.ghcHEAD`'s `ghcSrc` with this branch.
+     Change the source via `ghcSrc` (`.override`), never via `overrideAttrs` patches: hadrian is
+     a separate derivation built from `ghcSrc`, and patching only the compiler breaks the build
+     whenever a change touches hadrian. A working example is `/tmp/ghcwasm-scratch/mr16790/default.nix`.
    - Use Linux; macOS has no libnuma or libdw. The NUC (`ssh 10.1.0.17`, x86_64-linux, 8 cores)
      suits this. Run builds there detached (`setsid nohup … &`) and keep logs.
    - Optionally consider a regression test (e.g. checking the RTS package's static library

@@ -316,3 +316,18 @@ Findings while building. Raw logs are in `results/logs/` (not committed).
   the patch-0005 session). The builds run on the NUC from `~/bisect-haddock/bisect.nix`: nixpkgs'
   JS GHC HEAD with `ghcSrc` replaced by any GHC commit (`builtins.fetchGit` with submodules) and
   `--docs=no-haddocks` removed. First test: suspect `23c9b6c392` against its parent `521e55bf69`.
+- **Cheng Shao's GHC !16790 tested (cross `ghc --info` unit ids, #27919).**
+  - Our wasm GHCs are affected: they're built with `--hash-unit-ids`, and nixpkgs has
+    cabal-install 3.18.1.0. `--info` against `ghc-pkg` mismatches for `ghc-internal` and `ghc` on
+    9.14, and for `base`, `ghc-internal` and `ghc` on HEAD. 9.12 doesn't report base/ghc-internal
+    in `--info`. Nix builds through the generic builder aren't affected (`Setup.hs` doesn't use
+    the solver), but cabal-install in a shell is, e.g. the flake's devShell.
+  - A/B test on aarch64-darwin, with the MR (head `95f24e6b`) applied to our wasm GHC HEAD
+    (`556db2f3`): unpatched, cabal fails with `Cabal-7107` exactly as in #27919; patched, all
+    three ids match, `cabal build` of hello-pure succeeds and the `.wasm` runs under wasmtime.
+    Scratch setup in `/tmp/ghcwasm-scratch/mr16790/`. Report draft:
+    `drafts/ghc-mr16790-test-report.md`.
+  - **Pitfall:** to test a GHC patch that touches hadrian through nixpkgs, put it in `ghcSrc`
+    (`.override { ghcSrc = srcOnly { …; patches = old ++ [ diff ]; }; }`). Hadrian is a separate
+    derivation built from `ghcSrc`. Adding the patch with `overrideAttrs` patches only the
+    compiler and gives `No entry for "ghc unit-id" in …/stage0/lib/settings`.
