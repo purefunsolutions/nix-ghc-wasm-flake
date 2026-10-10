@@ -17,8 +17,9 @@
    [docs/nixpkgs-branch.md](docs/nixpkgs-branch.md)).
 2. **Default wasm package set.** Make the plain package set the default for wasm, so `Setup.hs`
    doesn't need an uncached native-bignum native GHC. Waiting for approval.
-3. **The JS backend's GHC HEAD failure on Hydra.** Check whether it's the same GHC 10 cross-build
-   haddock problem; if so, widen the haddock workaround from wasm to all cross compilers.
+3. ~~**The JS backend's GHC HEAD failure on Hydra.**~~ Done 2026-10-10: the same haddock bug.
+   The workaround now covers all cross compilers. A verification build of
+   `pkgsCross.ghcjs.haskell.packages.ghcHEAD.hello` is running on the NUC.
 
 ## GHC upstream (branches `wip/*` in `~/ghc`)
 
