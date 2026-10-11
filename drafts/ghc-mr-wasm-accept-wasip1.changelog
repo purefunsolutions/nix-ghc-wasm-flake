@@ -1,0 +1,5 @@
+section: wasm-backend
+synopsis: ``configure`` now accepts ``wasm32-*-wasip1`` target triples, the
+  name LLVM 22 and wasi-sdk 34 use for WASI preview 1.
+issues: #27930
+mrs: !16795

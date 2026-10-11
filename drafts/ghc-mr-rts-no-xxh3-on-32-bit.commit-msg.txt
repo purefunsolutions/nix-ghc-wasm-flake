@@ -1,0 +1,8 @@
+rts: don't compile XXH3 on 32-bit platforms
+
+hashBuffer only uses XXH3 on 64-bit platforms. On wasm32 with
+-msimd128, XXH3 includes <arm_neon.h> whenever clang has one (since
+b19ec331a4), but clang's own arm_neon.h rejects non-ARM targets. So
+define XXH_NO_XXH3 unless the word size is 64 bits. Fixes #27931.
+
+Assisted-by: Claude Code (Claude Opus 5.5)

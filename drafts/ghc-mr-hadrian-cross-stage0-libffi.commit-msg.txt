@@ -1,0 +1,8 @@
+hadrian: no target libffi for cross stage0 ghci
+
+Since b2721819f3, hadrian passes configure's libffi dirs, which are the
+target's, to ghci at every stage. Stage0 of a cross build is built for
+the build platform, so linking the stage1 compiler can pick the
+target's libffi. Master avoids this since 23c9b6c392. Fixes #NNNNN.
+
+Assisted-by: Claude Code (Claude Opus 5.5)

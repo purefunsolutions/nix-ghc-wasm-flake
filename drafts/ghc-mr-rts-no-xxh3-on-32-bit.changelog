@@ -1,0 +1,5 @@
+section: wasm-backend
+synopsis: Fix building the RTS with ``-msimd128`` and a clang that ships
+  ``arm_neon.h``.
+issues: #27931
+mrs: !16796

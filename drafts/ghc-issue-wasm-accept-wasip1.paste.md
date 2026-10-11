@@ -6,8 +6,8 @@ _LLM assistance: Claude Code (Claude Opus 5.5) was used to investigate this and 
 
 `wasip1` is now the usual name for WASI preview 1:
 
-- LLVM 22 renamed the `wasm32-wasi` target to `wasm32-wasip1`, and clang warns about `--target=wasm32-wasi` (llvm/llvm-project#165345).
-- wasi-sdk 34 removed its `wasm32-wasi` targets; they're now named `wasm32-wasip1` (WebAssembly/wasi-sdk#637).
+- LLVM 22 renamed the `wasm32-wasi` target to `wasm32-wasip1`, and clang warns about `--target=wasm32-wasi` ([llvm/llvm-project#165345](https://github.com/llvm/llvm-project/pull/165345)).
+- wasi-sdk 34 removed its `wasm32-wasi` targets; they're now named `wasm32-wasip1` ([WebAssembly/wasi-sdk#637](https://github.com/WebAssembly/wasi-sdk/pull/637)).
 - nixpkgs' WASI toolchain is `wasm32-unknown-wasip1` (`pkgsCross.wasm32-wasip1`).
 
 GHC's CI configures for `wasm32-wasi`, so it doesn't hit this.
@@ -26,7 +26,7 @@ host platform inferred as: aarch64-apple-darwin
 Unknown OS wasip1
 ```
 
-With nixpkgs' `wasm32-unknown-wasip1` toolchain (clang 21.1.8, wasi-libc 32) and the flags nixpkgs uses for its wasm GHC, it stops at the same point.
+With nixpkgs' `wasm32-unknown-wasip1` toolchain (clang 21.1.8, wasi-libc 32) and the configure flags of the wasm GHC in my nixpkgs branch, it stops at the same point.
 
 ## Expected behavior
 

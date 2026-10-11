@@ -1,0 +1,8 @@
+configure: accept wasip1 in WASI target triples
+
+LLVM 22 and wasi-sdk 34 name WASI preview 1 targets wasm32-*-wasip1,
+but configure and ghc-toolchain only accept wasi. Treat wasip1 like
+wasi, and keep it in the LLVM target that configure passes to the C
+compiler as --target. Fixes #27930.
+
+Assisted-by: Claude Code (Claude Opus 5.5)

@@ -1,0 +1,8 @@
+Fix building for WASM SIMD128 with clang's arm_neon.h
+
+Clang's own arm_neon.h, present when clang is built with ARM targets,
+fails with #error on wasm. Auto-select NEON for WASM SIMD128 only on
+Emscripten, which provides SIMDe's arm_neon.h, and elsewhere include
+arm_neon.h only when XXH_VECTOR is set to XXH_NEON. Fixes #1165.
+
+Assisted-by: Claude Code (Claude Opus 5.5)
