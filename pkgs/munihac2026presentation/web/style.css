@@ -1,0 +1,452 @@
+/* A 16:9 stage that scales with the window: everything is sized in --u,
+   one hundredth of the stage width. */
+:root {
+  --u: min(1vw, 1.7778vh);
+  --ink: #19142e;
+  --ink-raised: #231c3f;
+  --paper: #efebfa;
+  --muted: #a9a1c9;
+  --wasm: #654ff0;
+  --wasm-light: #a99cff;
+  --nix: #7ebae4;
+  --ok: #86d69e;
+  --todo: #ebbe5c;
+  --display: Futura, "Avenir Next Condensed", "Trebuchet MS", sans-serif;
+  --body: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --mono: "SF Mono", Menlo, "DejaVu Sans Mono", ui-monospace, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #0f0c1d;
+  color: var(--paper);
+  font-family: var(--body);
+}
+
+body {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+#stage {
+  position: relative;
+  width: calc(100 * var(--u));
+  height: calc(56.25 * var(--u));
+  background: var(--ink);
+  font-size: calc(2.1 * var(--u));
+  line-height: 1.4;
+  cursor: default;
+  user-select: none;
+}
+
+#slide {
+  height: 100%;
+  padding: calc(4.5 * var(--u)) calc(6 * var(--u)) calc(6 * var(--u));
+  overflow: hidden;
+}
+
+h1 {
+  margin: 0 0 0.6em;
+  font-family: var(--display);
+  font-size: calc(4.4 * var(--u));
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+h2 {
+  margin: 1em 0 0.4em;
+  font-family: var(--display);
+  font-size: calc(2.6 * var(--u));
+  font-weight: 700;
+}
+
+p {
+  margin: 0 0 0.7em;
+  max-width: 62ch;
+}
+
+ul {
+  margin: 0;
+  padding-left: 1.1em;
+}
+
+li {
+  margin: 0.25em 0;
+}
+
+li::marker {
+  color: var(--wasm-light);
+}
+
+strong {
+  color: #fff;
+}
+
+a {
+  color: var(--wasm-light);
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.15em;
+}
+
+a:focus-visible {
+  outline: 0.15em solid var(--nix);
+  outline-offset: 0.1em;
+}
+
+code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  color: var(--nix);
+  white-space: nowrap;
+}
+
+pre {
+  margin: 0 0 0.8em;
+  padding: 0.8em 1em;
+  background: var(--ink-raised);
+  border-left: 0.25em solid var(--wasm);
+  font-size: 0.72em;
+  user-select: text;
+}
+
+pre code {
+  font-size: 1em;
+  white-space: pre;
+}
+
+table {
+  margin: 0 0 0.8em;
+  border-collapse: collapse;
+  font-size: 0.8em;
+}
+
+th,
+td {
+  padding: 0.15em 1.2em 0.15em 0;
+  text-align: left;
+}
+
+thead th {
+  color: var(--muted);
+  font-weight: 500;
+  border-bottom: 1px solid #3a3160;
+}
+
+td.ok {
+  color: var(--ok);
+  font-weight: 700;
+  text-align: center;
+}
+
+.error {
+  color: var(--todo);
+}
+
+pre.error {
+  border-left-color: var(--todo);
+  color: var(--paper);
+}
+
+.loading {
+  color: var(--muted);
+}
+
+footer {
+  position: absolute;
+  inset: auto calc(6 * var(--u)) calc(2 * var(--u));
+  display: flex;
+  justify-content: space-between;
+  color: var(--muted);
+  font-size: calc(1.2 * var(--u));
+}
+
+#runtime::before {
+  content: "";
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  margin-right: 0.6em;
+  background: var(--wasm);
+}
+
+/* The upstream tracker, generated from the README's table. */
+.tracker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: calc(4 * var(--u));
+}
+
+.tracker section {
+  min-width: 0;
+}
+
+.tracker h2 {
+  margin: 0 0 0.4em;
+  font-size: calc(1.8 * var(--u));
+}
+
+.tracker .count {
+  color: var(--muted);
+  font-family: var(--body);
+  font-weight: 500;
+}
+
+.tracker ul {
+  padding: 0;
+  list-style: none;
+}
+
+.tracker li {
+  margin: 0 0 0.45em;
+  padding-left: 0.6em;
+  border-left: 0.2em solid var(--nix);
+  font-size: calc(1.3 * var(--u));
+  line-height: 1.3;
+}
+
+.tracker li.merged {
+  border-left-color: var(--ok);
+}
+
+.tracker li.todo,
+.tracker li.other {
+  border-left-color: var(--todo);
+}
+
+.tracker .what,
+.tracker .state {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tracker .state {
+  color: var(--muted);
+  font-size: 0.85em;
+}
+
+.tracker .who {
+  color: var(--paper);
+  margin-right: 0.4em;
+}
+
+.tracker .where {
+  display: inline-block;
+  min-width: 3.9em;
+  color: var(--muted);
+  font-size: 0.85em;
+}
+
+.tracker .where-ghc {
+  color: var(--wasm-light);
+}
+
+.tracker .where-nixpkgs {
+  color: var(--nix);
+}
+
+.tracker .ids a {
+  font-weight: 600;
+}
+
+#slide.upstream h1 {
+  margin-bottom: 0.15em;
+}
+
+#slide.upstream > p {
+  margin-bottom: 0.3em;
+}
+
+#slide.upstream > p:first-of-type {
+  max-width: calc(70 * var(--u));
+  font-size: calc(1.6 * var(--u));
+}
+
+#slide.upstream > p.asof {
+  max-width: none;
+  margin-bottom: 1.4em;
+  color: var(--muted);
+  font-size: calc(1.3 * var(--u));
+}
+
+/* The live demo: a definition list of facts about the running program. */
+.live {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.6em 2em;
+  margin: 0;
+  font-size: 0.85em;
+}
+
+.live dt {
+  color: var(--muted);
+}
+
+.live dd {
+  margin: 0;
+}
+
+#uptime {
+  color: var(--ok);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The story so far: a timeline, as a table without its header. */
+#slide.story h1 {
+  margin-bottom: 0.4em;
+  font-size: calc(3.4 * var(--u));
+}
+
+#slide.story table {
+  margin-bottom: 0.8em;
+  font-size: 0.66em;
+}
+
+#slide.story thead {
+  display: none;
+}
+
+#slide.story td {
+  padding: 0.3em 1.2em 0.3em 0;
+  vertical-align: top;
+  border-bottom: 1px solid #2c2450;
+}
+
+#slide.story td:first-child {
+  color: var(--wasm-light);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+#slide.story p {
+  max-width: none;
+  font-size: 0.7em;
+}
+
+/* The results slide and the closing slide carry more text than the rest. */
+#slide.results p {
+  max-width: none;
+  font-size: 0.78em;
+}
+
+#slide.aside p {
+  max-width: calc(76 * var(--u));
+  font-size: 0.85em;
+}
+
+#slide.thanks p,
+#slide.thanks li {
+  font-size: 0.9em;
+}
+
+#slide.thanks p {
+  max-width: 70ch;
+}
+
+#slide.thanks ul {
+  margin-bottom: 0.9em;
+}
+
+#slide.story .summary {
+  color: var(--paper);
+  margin-bottom: 0.3em;
+}
+
+/* The WebGL demo fills the stage; the text floats over it. */
+#slide.webgl canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#slide.webgl h1,
+#slide.webgl ul,
+#slide.webgl .error {
+  position: relative;
+  text-shadow: 0 0 0.5em #000;
+}
+
+#slide.webgl .fps {
+  position: absolute;
+  top: calc(1.5 * var(--u));
+  left: calc(6 * var(--u));
+  margin: 0;
+  color: var(--ok);
+  font-family: var(--mono);
+  font-size: calc(1.3 * var(--u));
+  font-variant-numeric: tabular-nums;
+}
+
+#slide.webgl h1 {
+  font-size: calc(3.2 * var(--u));
+}
+
+#slide.webgl ul {
+  position: absolute;
+  left: calc(6 * var(--u));
+  bottom: calc(5 * var(--u));
+  max-width: calc(50 * var(--u));
+  color: var(--muted);
+  font-size: calc(1.35 * var(--u));
+}
+
+/* QR codes sit in the top right corner of their slide. */
+.qr {
+  position: absolute;
+  top: calc(4.5 * var(--u));
+  right: calc(6 * var(--u));
+  width: calc(11 * var(--u));
+}
+
+.qr img {
+  display: block;
+  width: 100%;
+  image-rendering: pixelated;
+}
+
+/* The title slide: the Haskell-in-wasm mark beside the title. */
+#slide.title {
+  display: grid;
+  grid-template-columns: calc(24 * var(--u)) 1fr;
+  column-gap: calc(5 * var(--u));
+  align-content: center;
+}
+
+#slide.title .logo {
+  grid-row: 1 / span 4;
+  width: 100%;
+}
+
+#slide.title h1 {
+  font-size: calc(5.6 * var(--u));
+}
+
+#slide.title p {
+  color: var(--muted);
+}
+
+#slide.title p:first-of-type {
+  color: var(--paper);
+  font-size: 1.15em;
+}
+
+/* Sized in stage units, so it clears the footer whatever the window's shape. */
+#slide.screenshot img.screenshot {
+  display: block;
+  max-width: 100%;
+  max-height: calc(35 * var(--u));
+  margin: calc(1 * var(--u)) auto 0;
+  border-radius: calc(0.5 * var(--u));
+}

@@ -1,0 +1,42 @@
+cabal-version:      3.0
+name:               munihac2026presentation
+version:            0.1.0.0
+synopsis:
+  MuniHac 2026 lightning talk slides, running on GHC's wasm backend
+
+license:            MIT
+author:             Mika Tammi
+maintainer:         mikatammi@gmail.com
+category:           Example
+build-type:         Simple
+extra-source-files:
+  lambda.glb
+  slides.md
+
+executable munihac2026presentation
+  main-is:          Main.hs
+  other-modules:
+    Content
+    Demo
+    Dom
+    Embed
+    Gl
+    Glb
+    Lambda3D
+    Markdown
+    Slides
+    Tracker
+
+  build-depends:
+    , base
+    , bytestring
+    , ghc-experimental
+    , template-haskell
+
+  default-language: Haskell2010
+
+  -- A JSFFI program is a wasm32-wasi reactor module: JavaScript calls the
+  -- exported hs_start after initializing the instance.
+  ghc-options:
+    -Wall -no-hs-main -optl-mexec-model=reactor
+    "-optl-Wl,--export=hs_start"
