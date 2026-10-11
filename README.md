@@ -28,6 +28,7 @@ marked "carried". Statuses as of 2026-10-11.
 | nixpkgs | [#225000](https://github.com/NixOS/nixpkgs/pull/225000): the original GHC wasm backend PR | — | sternenseemann | draft since 2023 | two commits ported |
 | LLVM | [llvm#129007](https://github.com/llvm/llvm-project/pull/129007): wasm-ld: split a huge relocs function; `__wasm_apply_data_relocs` overflows for very large TH libraries | 9.12 and newer (TH) | dmjio | open | not carried (only matters for very large TH libraries) |
 | xxHash | xxhash.h: don't mistake clang's `arm_neon.h` for SIMDe; wasm `-msimd128` builds of GHC's vendored copy fail with `#error` | 9.12, 9.14, 10.0, HEAD (vendored copy) | Mika Tammi | not submitted yet (fix on branch `wasm-simd128-neon-detection`) | not carried (GHC's own XXH3 fix covers its vendored copy) |
+| nixpkgs | my other patches, in the [`ghcwasmhacking`](https://github.com/mikatammi/nixpkgs/tree/ghcwasmhacking) branch; GHC builder, wasilibc, LLVM and cross-compilation fixes, see [docs/nixpkgs-branch.md](docs/nixpkgs-branch.md) | all wasm GHCs | Mika Tammi | not submitted yet; to be split into PRs | carried (it is the branch) |
 
 The GHC patches that aren't submitted yet are in [`upstream/ghc/`](upstream/ghc/). The nixpkgs
 branch itself isn't meant to become a PR; see [docs/nixpkgs-branch.md](docs/nixpkgs-branch.md).
