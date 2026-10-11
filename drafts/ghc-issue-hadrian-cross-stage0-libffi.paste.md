@@ -8,7 +8,7 @@ configure's `--with-ffi-includes` and `--with-ffi-libraries` describe the target
 
 With a wasm32-wasi target and libffi-wasm, gold takes the wasm `libffi.a` for the bootstrap RTS's `-lffi` and fails. ELF cross builds may get away with it, because the linker can skip an incompatible archive (not tested). #21932 (loongarch64, 9.2.3) looks like the header side of the same bug: stage0 `ghci`'s `GHCi/FFI.hsc` gets compiled against the target's `ffitarget.h`.
 
-Master doesn't have the bug since 23c9b6c392: in a cross build, stages 0 and 1 take these settings from `hadrian/cfg/system.config.host`, which leaves them empty. [PENDING: nixpkgs' wasm GHC HEAD (556db2f32f) builds on x86_64-linux without the fix.] ghc-10.0, ghc-9.14 and ghc-9.12 still have it.
+Master doesn't have the bug since 23c9b6c392: in a cross build, stages 0 and 1 take these settings from `hadrian/cfg/system.config.host`, which leaves them empty. Without the fix, nixpkgs' wasm GHC HEAD (556db2f32f) builds on x86_64-linux, and its hello test passes under wasmtime. ghc-10.0, ghc-9.14 and ghc-9.12 still have the bug.
 
 ## Steps to reproduce
 

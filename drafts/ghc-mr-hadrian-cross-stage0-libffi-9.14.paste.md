@@ -15,7 +15,7 @@ Master doesn't need this: since 23c9b6c392, a cross build reads stage0's libffi 
 
 - Without the fix, a wasm32-wasi cross build of 9.14.1 on x86_64-linux fails to link the stage1 compiler (log in #NNNNN).
 - nixpkgs builds its wasm GHC 9.12 and 9.14 with this fix on aarch64-darwin, aarch64-linux and x86_64-linux, and their tests pass under wasmtime. nixpkgs spells the condition `expr (notM cross)`, which is how `notCross` is defined (`hadrian/src/Expression.hs:169-170`).
-- [PENDING] nixpkgs' wasm GHC HEAD (556db2f32f, which has 23c9b6c392) builds and passes its test on x86_64-linux without the fix.
+- Without the fix, nixpkgs' wasm GHC HEAD (556db2f32f, which has 23c9b6c392) builds on x86_64-linux, and its hello test passes under wasmtime.
 - Hadrian builds with this commit on ghc-10.0, ghc-9.14 and ghc-9.12 (nixpkgs' `make-hadrian.nix` with GHC 9.10.3, x86_64-linux).
 - CI can't trigger the bug, because no CI job passes `--with-ffi-*` to a cross build. The wasm jobs take libffi-wasm from the wasi-sdk sysroot ([ghc-wasm-meta's `setup.sh`](https://gitlab.haskell.org/haskell-wasm/ghc-wasm-meta/-/blob/e56b33ce9104/setup.sh#L117-118)), so their libffi dirs are empty.
 
