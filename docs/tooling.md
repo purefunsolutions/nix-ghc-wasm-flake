@@ -12,7 +12,7 @@ Analysed 2026-10-10. The hands-on results are from nixpkgs' wasm GHC 9.14 (branc
 | GHCi browser mode (`-fghci-browser`) | upstream feature; needs extra node packages, not tried |
 | Debug RTS, `+RTS -D…` tracing | available (RTS ways `v debug debug_dyn dyn`) |
 | Eventlog, heap profile by closure type | **works** (tested) |
-| Cost-centre profiling (`-prof`, `+RTS -p`, `-xc`, `-hc`) | **missing**: our nixpkgs branch doesn't build profiled libraries for wasm |
+| Cost-centre profiling (`-prof`, `+RTS -p`, `-xc`, `-hc`) | **works** (tested); time samples are always 0 on wasm |
 | Source-level debugging in lldb or browser DevTools | **not possible**: GHC's wasm code generator emits no DWARF |
 | Haskell Language Server on wasm-specific code | **not supported** upstream, no roadmap |
 | HLS with a native GHC of the same version | works today, with limits (see below) |
@@ -45,11 +45,12 @@ playwright. nixpkgs doesn't provide those to GHC yet, so this is untested.
   available.
 - **Eventlog and heap profiles by closure type:** these need a directory the program can write
   to (`wasmtime run --dir .`). Tested: `+RTS -l -hT` wrote `fact.wasm.eventlog` and `fact.hp`.
-- **Cost-centre profiling** (`-prof`, `+RTS -p`, `-xc` stack traces, `-hc`) needs profiled
-  libraries. The nixpkgs branch disables them for wasm (`enableProfiledLibs`), which roughly
-  halves each GHC build, and our GHC 9.14 has no `p` way and no `.p_hi` files. Upstream supports
-  profiling on wasm. **Option:** make profiled libraries opt-in, or turn them back on if build
-  time and Hydra's output size allow.
+- **Cost-centre profiling** (`-prof`, `+RTS -p`, `-xc`, `-hc`) works. The nixpkgs branch
+  first disabled profiled libraries for wasm. Since 2026-10-11 they're built like for native and
+  JS GHCs (RTS ways `v debug debug_p debug_p_dyn debug_dyn p p_dyn dyn`). Tested with 9.14:
+  `+RTS -xc` prints full cost-centre stacks, and `+RTS -p` writes a complete allocation profile.
+  The time columns always show 0 ticks: WASI has no timer signals, so the RTS can't sample
+  time.
 
 ### Native debuggers: wasm level only
 
@@ -107,8 +108,8 @@ platform-independent library, with a thin wasm entry point.
    and document the library + thin entry point layout.
 2. **A GHCi check in the flake:** run a scripted GHCi session with a breakpoint, so the debugger
    stays tested on every lock bump.
-3. **Profiling in nixpkgs:** decide between opt-in profiled libraries for wasm and turning them
-   back on, then test `-prof` with `+RTS -p -xc`.
+3. ~~**Profiling in nixpkgs**~~: done, profiled libraries are back on for wasm (tested on darwin;
+   Linux builds pending).
 4. **GHCi browser mode in nixpkgs:** provide the node packages it needs (`ws`, optionally
    playwright) and test it.
 5. Nothing for DWARF or a wasm-aware HLS; those need GHC and HLS work upstream.
