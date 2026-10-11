@@ -82,6 +82,8 @@ uses the forks.
    - wasi-sdk's clang is built for WebAssembly only, and clang generates `arm_neon.h` only for
      ARM/AArch64 targets (`clang/lib/Headers/CMakeLists.txt:452` in 21.1.8). So the fork can't
      hit this.
+   - The detection bug itself is reported to xxHash as
+     [#1165](https://github.com/Cyan4973/xxHash/issues/1165).
 
 The other upstream items (hadrian's stage0 libffi, the GHC 10 static library dirs, darwin host
 settings, the haddock failure) aren't about the toolchain.
