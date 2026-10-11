@@ -3,7 +3,7 @@
 Repository: `~/nixpkgs-ghcwasm.git`. The branch was created 2026-10-09 on top of
 `origin/haskell-updates` at `68594478077b`, following the Haskell team's advice to base Haskell
 work there. Published at https://github.com/mikatammi/nixpkgs/tree/ghcwasmhacking and
-force-pushed there after every change, so expect rewritten history. No PR yet. Commits 15–17
+force-pushed there after every change, so expect rewritten history. No PR yet. Commits 14–16
 (Template Haskell) lived on a separate branch, `ghcwasmhacking-th`, until TH was green; they
 were folded in on 2026-10-09.
 
@@ -20,17 +20,16 @@ Local reference branches with the original PRs: `pr/225000`, `pr/561449`, `pr/55
 | 5 | `haskell.compiler: accept wasm32-*-wasip1 target triples` | Mika Tammi | haskell-updates; the patch also goes to GHC (`upstream/ghc/0001-…`) |
 | 6 | `haskell.compiler: link wasm targets with wasm-ld` | Mika Tammi | haskell-updates |
 | 7 | `haskell.compiler: drop static-cross workarounds for wasm targets` | Mika Tammi | haskell-updates |
-| 8 | `haskell.compiler: don't build profiled libraries for wasm targets` | Mika Tammi | haskell-updates |
-| 9 | `haskell.compiler: use upstream's C and linker flags for wasm targets` | Mika Tammi | haskell-updates |
-| 10 | `haskell.compiler: don't link the stage0 compiler against libffi-wasm` | Mika Tammi | haskell-updates; hadrian patch also for GHC (`upstream/ghc/0002-…`) |
-| 11 | `haskell.compiler: fix the wasm RTS build against wasilibc 32` | Mika Tammi | haskell-updates; RTS patch also for GHC (`upstream/ghc/0003-…`) |
-| 12 | `haskell.compiler: don't compile XXH3 into the wasm RTS` | Mika Tammi | haskell-updates; RTS patch also for GHC (`upstream/ghc/0004-…`) |
-| 13 | `haskell.compiler: fix the darwin host config of wasm GHC >= 10` | Mika Tammi | haskell-updates; GHC issue: the host templates should use configure's results (`use-lib-rt`, otool, install_name_tool) |
-| 14 | `haskell.compiler: no haddock docs for cross GHC >= 10` | Mika Tammi | haskell-updates, independent of wasm: it also fixes the JS backend's GHC HEAD on Hydra. Hadrian issue: the haddock index step reads the stage0 package db in GHC 10 cross builds |
-| 15 | `haskell: enable shared libraries for GHC's wasm interpreter` | ilkecan (cherry-pick of #558928, unchanged) | #558928 |
-| 16 | `libffi-wasm: also build libffi.so` | Mika Tammi | suggest for #561449 (dyld.mjs loads `libffi.so`) |
-| 17 | `haskell.compiler: set up GHC's wasm interpreter for Template Haskell` | Mika Tammi | haskell-updates. Contents: the node wrapper for `dyld.mjs`'s interpreter line, and the dyld library dir patch, which would ideally become a GHC option |
-| 18 | `haskell.compiler.ghcHEAD: fix linking executables with libnuma/libdw` | Mika Tammi | haskell-updates, independent of wasm; GHC MR from `upstream/ghc/0005-…` |
+| 8 | `haskell.compiler: use upstream's C and linker flags for wasm targets` | Mika Tammi | haskell-updates |
+| 9 | `haskell.compiler: don't link the stage0 compiler against libffi-wasm` | Mika Tammi | haskell-updates; hadrian patch also for GHC (`upstream/ghc/0002-…`) |
+| 10 | `haskell.compiler: fix the wasm RTS build against wasilibc 32` | Mika Tammi | haskell-updates; RTS patch also for GHC (`upstream/ghc/0003-…`) |
+| 11 | `haskell.compiler: don't compile XXH3 into the wasm RTS` | Mika Tammi | haskell-updates; RTS patch also for GHC (`upstream/ghc/0004-…`) |
+| 12 | `haskell.compiler: fix the darwin host config of wasm GHC >= 10` | Mika Tammi | haskell-updates; GHC issue: the host templates should use configure's results (`use-lib-rt`, otool, install_name_tool) |
+| 13 | `haskell.compiler: no haddock docs for cross GHC >= 10` | Mika Tammi | haskell-updates, independent of wasm: it also fixes the JS backend's GHC HEAD on Hydra. Hadrian issue: the haddock index step reads the stage0 package db in GHC 10 cross builds |
+| 14 | `haskell: enable shared libraries for GHC's wasm interpreter` | ilkecan (cherry-pick of #558928, unchanged) | #558928 |
+| 15 | `libffi-wasm: also build libffi.so` | Mika Tammi | suggest for #561449 (dyld.mjs loads `libffi.so`) |
+| 16 | `haskell.compiler: set up GHC's wasm interpreter for Template Haskell` | Mika Tammi | haskell-updates. Contents: the node wrapper for `dyld.mjs`'s interpreter line, and the dyld library dir patch, which would ideally become a GHC option |
+| 17 | `haskell.compiler.ghcHEAD: fix linking executables with libnuma/libdw` | Mika Tammi | haskell-updates, independent of wasm; GHC MR from `upstream/ghc/0005-…` |
 
 The wasip1 commit (5) also carries the LLVM-target hunk; it was folded in with an autosquash
 rebase.
@@ -39,7 +38,7 @@ rebase.
 
 - Every change is gated on `isWasm`/`isWasi`, so native derivations are unchanged. This is
   checked with `scripts/native-drvpaths.sh` against `results/native-drvpaths-base.txt`.
-  Exception: commit 18 deliberately changes every GHC >= 10, including native `ghcHEAD`. It
+  Exception: commit 17 deliberately changes every GHC >= 10, including native `ghcHEAD`. It
   fixes a bug in stock nixpkgs.
 - Formatted with nixpkgs' `nix fmt` (treefmt: nixfmt, nixf-diagnose, keep-sorted, …).
 - Commits written or adapted with AI assistance carry an `Assisted-by:` trailer, per nixpkgs'
