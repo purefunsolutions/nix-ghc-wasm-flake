@@ -40,6 +40,11 @@ prints the expected 5 lines under wasmtime. Template Haskell (`hello-th`) is tra
 | HEAD (`ghcHEAD`) | **✓ / ✓ (pure ✓)** | **✓ / ✓ (pure ✓)** | **✓ / ✓ (pure ✓)** |
 
 Toolchain sanity: the wasilibc C/C++ test and libffi-wasm's upstream test suite pass on all three systems.
+
+**Rebuilt with profiled libraries** (nixpkgs `b708887d8ad1`, 2026-10-11): on aarch64-darwin and
+aarch64-linux, all three GHCs build, and hello, hello-pure and hello-th pass. x86_64-linux is still
+building.
+
 Build log of findings: [results/notes.md](results/notes.md).
 
 **First green build (2026-10-09):** aarch64-linux, GHC 9.12.5-rc3, built from source with stock
