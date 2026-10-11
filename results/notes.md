@@ -300,7 +300,7 @@ Findings while building. Raw logs are in `results/logs/` (not committed).
     every build since nixpkgs moved to **10.1.20260810** (GHC `556db2f3`) on 2026-08-15. So it's a
     GHC master regression from between those two snapshots, not present in 9.x.
   - Prime suspect: `23c9b6c392` "hadrian: Build stage 2 cross compilers" (written 2023, merged
-    2026-06-20). It restructures how cross compilers are staged and adds a `binary-dist-dir-cross`
+    2026-06-23). It restructures how cross compilers are staged and adds a `binary-dist-dir-cross`
     target, and the failing step reads `_build/stage1/lib/../../stage0/lib/package.conf.d`. It is
     **not** in `ghc-10.0`, so 10.0 is probably unaffected; it's master/10.2 only. That's the
     opposite of patch 0005, which is in 10.0. Not bisected.
@@ -332,7 +332,7 @@ Findings while building. Raw logs are in `results/logs/` (not committed).
     derivation built from `ghcSrc`. Adding the patch with `overrideAttrs` patches only the
     compiler and gives `No entry for "ghc unit-id" in …/stage0/lib/settings`.
 - **Haddock bug bisected: the first bad commit is GHC `23c9b6c392` "hadrian: Build stage 2 cross compilers"**
-  (written 2023-12-21, merged 2026-06-20; not in `ghc-10.0`).
+  (written 2023-12-21, merged 2026-06-23 via !15231; not in `ghc-10.0`).
   - Test: nixpkgs' JS-backend cross GHC HEAD (x86_64-linux, NUC) built from a given GHC commit
     with the haddock workaround removed (`~/bisect-haddock/bisect.nix`, sources via
     `nix-prefetch-git` because `builtins.fetchGit` can't fetch GHC's submodules at these
