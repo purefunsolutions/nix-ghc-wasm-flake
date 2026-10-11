@@ -28,7 +28,12 @@ User decisions (2026-10-09):
 - nixpkgs `CONTRIBUTING.md` "Automation/AI policy" (`:896-930`): every commit I create or adapt
   gets `Assisted-by: Claude Code (claude-opus-5-5)` (`Co-authored-by` doesn't satisfy it); you
   stay the accountable reviewer; drafted PR/issue/MR texts carry their own disclosure. ilkecan's
-  cherry-picks stay untouched. (GHC has no in-repo AI policy; disclose anyway.)
+  cherry-picks stay untouched.
+- GHC has no in-repo AI policy, but its wiki has one:
+  [contributing/AI](https://gitlab.haskell.org/ghc/ghc/-/wikis/contributing/AI). Every commit gets
+  an `Assisted-By:` line. Every issue and MR starts with a disclosure that also says the author
+  reviewed the material and takes responsibility for it (P3/P4). GHC strongly recommends writing
+  the final texts yourself (R1).
 
 ## Research summary (2026-10-09)
 
