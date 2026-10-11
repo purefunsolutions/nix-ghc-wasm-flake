@@ -1,0 +1,4 @@
+section: wasm-backend
+synopsis: Fix building the RTS with wasi-libc 32 (wasi-sdk 32).
+issues: #27929
+mrs: !16794

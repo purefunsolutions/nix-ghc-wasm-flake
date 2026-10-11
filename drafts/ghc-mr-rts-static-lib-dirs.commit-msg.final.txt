@@ -1,0 +1,8 @@
+rts: don't restrict static lib dirs to libffi's
+
+With --with-ffi-libraries, extra-lib-dirs-static in rts.buildinfo
+stops Cabal from falling back to extra-lib-dirs, so the RTS's
+library-dirs-static lacks the libnuma, libdw and libzstd dirs and
+linking fails. Drop it. Fixes #27926.
+
+Assisted-by: Claude Code (Claude Opus 5.5)

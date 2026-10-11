@@ -1,0 +1,7 @@
+rts: include <wasi/api.h> in wasm JSFFI.c
+
+JSFFI.c uses __wasi_errno_t and __wasi_args_get() without including
+<wasi/api.h>. With wasi-libc 32, none of the headers it does include
+pull that in any more, so the wasm RTS fails to compile. Fixes #27929.
+
+Assisted-by: Claude Code (Claude Opus 5.5)
