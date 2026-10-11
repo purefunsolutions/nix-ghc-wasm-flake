@@ -44,6 +44,13 @@
             ghc: wasm.haskell.packages.${ghc}.callPackage ./nix/hello-pure.nix { }
           );
           hellosTH = lib.genAttrs ghcs (ghc: wasm.haskell.packages.${ghc}.callPackage ./nix/hello-th.nix { });
+          # The MuniHac 2026 talk: slides that are a GHC 9.14 JSFFI program.
+          munihac2026presentation = pkgs.callPackage ./nix/munihac2026presentation.nix {
+            inherit (wasm.haskell.packages.ghc914) ghc;
+            presentation-wasm =
+              wasm.haskell.packages.ghc914.callPackage ./nix/munihac2026presentation-wasm.nix
+                { };
+          };
         };
 
       # Run a hello build under wasmtime and compare its output.
@@ -74,6 +81,7 @@
             hellos
             hellosPure
             hellosTH
+            munihac2026presentation
             ;
         in
         lib.mapAttrs' (ghc: drv: lib.nameValuePair "wasm-${ghc}" drv) compilers
@@ -81,6 +89,7 @@
         // lib.mapAttrs' (ghc: drv: lib.nameValuePair "hello-pure-${ghc}" drv) hellosPure
         // lib.mapAttrs' (ghc: drv: lib.nameValuePair "hello-th-${ghc}" drv) hellosTH
         // {
+          inherit munihac2026presentation;
           default = hellos.ghc912;
         }
       );
@@ -93,6 +102,7 @@
             hellos
             hellosPure
             hellosTH
+            munihac2026presentation
             ;
         in
         lib.mapAttrs' (ghc: drv: lib.nameValuePair "hello-${ghc}" (runHello pkgs ghc drv)) hellos
@@ -105,6 +115,7 @@
           # libffi-wasm's own test suite.
           wasilibc = wasm.wasilibc.tests.simple-c-cxx-binaries;
           libffi-wasm = wasm.libffi-wasm.tests.upstream;
+          inherit munihac2026presentation;
         }
       );
 
@@ -116,6 +127,17 @@
               exec ${lib.getExe pkgs.wasmtime} run ${
                 lib.getExe self.packages.${pkgs.stdenv.hostPlatform.system}.default
               } "$@"
+            ''
+          );
+        };
+        # Opens the MuniHac 2026 talk in the default browser.
+        munihac2026presentation = {
+          type = "app";
+          program = toString (
+            pkgs.writeShellScript "munihac2026presentation" ''
+              exec ${
+                if pkgs.stdenv.hostPlatform.isDarwin then "/usr/bin/open" else lib.getExe' pkgs.xdg-utils "xdg-open"
+              } ${self.packages.${pkgs.stdenv.hostPlatform.system}.munihac2026presentation}/index.html
             ''
           );
         };
