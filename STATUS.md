@@ -41,9 +41,8 @@ prints the expected 5 lines under wasmtime. Template Haskell (`hello-th`) is tra
 
 Toolchain sanity: the wasilibc C/C++ test and libffi-wasm's upstream test suite pass on all three systems.
 
-**Rebuilt with profiled libraries** (nixpkgs `b708887d8ad1`, 2026-10-11): on aarch64-darwin and
-aarch64-linux, all three GHCs build, and hello, hello-pure and hello-th pass. x86_64-linux is still
-building.
+**Rebuilt with profiled libraries** (nixpkgs `b708887d8ad1`, 2026-10-11): green again on all three
+systems. All three GHCs build, and hello, hello-pure and hello-th pass.
 
 Build log of findings: [results/notes.md](results/notes.md).
 

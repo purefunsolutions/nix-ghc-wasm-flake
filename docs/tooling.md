@@ -109,7 +109,7 @@ platform-independent library, with a thin wasm entry point.
 2. **A GHCi check in the flake:** run a scripted GHCi session with a breakpoint, so the debugger
    stays tested on every lock bump.
 3. ~~**Profiling in nixpkgs**~~: done, profiled libraries are back on for wasm. All three GHCs
-   build and pass their checks with them on aarch64-darwin and aarch64-linux; x86_64-linux pending.
+   build and pass their checks with them on all three systems.
 4. **GHCi browser mode in nixpkgs:** provide the node packages it needs (`ws`, optionally
    playwright) and test it.
 5. Nothing for DWARF or a wasm-aware HLS; those need GHC and HLS work upstream.
