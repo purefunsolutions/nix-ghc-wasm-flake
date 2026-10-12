@@ -31,6 +31,9 @@
    For the latter: master-only (not in `ghc-10.0`). **Bisected** to `23c9b6c392` "hadrian: Build
    stage 2 cross compilers" (parent `521e55bf69` good). Still to find out why GHC's own cross CI
    doesn't hit it (see `results/notes.md`).
+11. **GHC's testsuite** (asked by Cheng Shao): run it against our wasm GHCs, first outside
+    nixpkgs (upstream wasi-sdk, or `--test-compiler` with a nixpkgs compiler), then maybe as a
+    flake check. Options and costs: `docs/testsuite.md`.
 
 ## ghc-wasm-flake
 
