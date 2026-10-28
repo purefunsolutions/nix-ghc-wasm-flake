@@ -1,0 +1,5 @@
+Hello from GHC's wasm backend, built purely with Nix!
+265252859812191058636308480000000
+args: a b
+C FFI: 40 + 2 = 42
+FFI wrapper (libffi-wasm): 6 * 7 = 42

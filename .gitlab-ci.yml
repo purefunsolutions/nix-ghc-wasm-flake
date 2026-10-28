@@ -1,8 +1,15 @@
-# GitLab CI: on master, a push to the public GitHub repository. The
-# flake's checks join the ci stage together with the flake.
+# GitLab CI: the flake's checks, evaluation only, and on master a push to
+# the public GitHub repository.
 stages:
   - ci
   - publish
+# Every system evaluated, nothing built: the wasm GHCs take hours per
+# system, so their builds stay on our machines (scripts/build.sh) for now.
+checks:
+  stage: ci
+  interruptible: true
+  script:
+    - nix flake check --all-systems --no-build --no-update-lock-file -L
 # Pushes master to the public GitHub repository, in the publish stage, so
 # only after the ci stage passed: a broken master never reaches GitHub.
 #

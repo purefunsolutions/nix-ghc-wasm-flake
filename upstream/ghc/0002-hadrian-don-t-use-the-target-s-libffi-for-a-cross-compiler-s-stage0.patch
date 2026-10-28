@@ -1,0 +1,42 @@
+From e56421e3c3d141c884480f2ff3422b1c085e536a Mon Sep 17 00:00:00 2001
+From: Mika Tammi <mikatammi@gmail.com>
+Date: Fri, 9 Oct 2026 13:34:21 +0200
+Subject: [PATCH] hadrian: don't use the target's libffi for a cross compiler's
+ stage0
+
+configure's --with-ffi-includes/--with-ffi-libraries describe the
+target's libffi. Hadrian also passed them to the stage0 build of the
+`ghc` library, which for a cross compiler is built for the build
+platform. The stage0 package then carries the target libffi's library
+directory, and linking the stage1 compiler resolves the bootstrap RTS's
+`-lffi` against the target's libffi.
+
+For ELF targets the linker happens to skip the incompatible archive, but
+for wasm32-wasi (with libffi-wasm) GNU gold fails with "plugin failed to
+claim member ffi.o" and leaves the ffi symbols undefined.
+
+Only pass the libffi directories when not building stage0 of a cross
+compiler. Stage0 then finds the build platform's libffi in its usual
+search paths, as for all other stage0 packages.
+
+Assisted-by: Claude Code (claude-opus-5-5)
+---
+ hadrian/src/Settings/Packages.hs | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/hadrian/src/Settings/Packages.hs b/hadrian/src/Settings/Packages.hs
+index 5aa287d..71307e0 100644
+--- a/hadrian/src/Settings/Packages.hs
++++ b/hadrian/src/Settings/Packages.hs
+@@ -158,7 +158,10 @@ packageArgs = do
+           -- the Stage1 libraries, as we already know that the bootstrap
+           -- compiler comes with the same versions as the one we are building.
+           --
+-            builder (Cabal Setup) ? cabalExtraDirs ffiIncludeDir ffiLibraryDir
++            -- The libffi directories from configure are the target's. When cross
++            -- compiling, the stage0 compiler library is built for the build
++            -- platform, where they would make the linker pick the target's libffi.
++            builder (Cabal Setup) ? orM [notStage0, expr (notM cross)] ? cabalExtraDirs ffiIncludeDir ffiLibraryDir
+           , builder (Cabal Flags) ? mconcat
+             [ ifM stage0
+                 (andM [cross, bootCross] `cabalFlag` "internal-interpreter")
