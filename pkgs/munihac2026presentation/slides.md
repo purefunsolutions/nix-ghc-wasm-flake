@@ -48,11 +48,11 @@ The first green build happened on Friday, right here. Much of what the tracker l
 ---
 
 @class upstream
-@qr https://github.com/purefunsolutions/nix-ghc-wasm-flake/tree/initial
+@qr https://github.com/purefunsolutions/nix-ghc-wasm-flake
 
 # Tracked in the README
 
-[github.com/purefunsolutions/nix-ghc-wasm-flake](https://github.com/purefunsolutions/nix-ghc-wasm-flake/tree/initial) tracks how far GHC's WebAssembly support has got in nixpkgs, and gives you an experimental preview of it before it's merged.
+[github.com/purefunsolutions/nix-ghc-wasm-flake](https://github.com/purefunsolutions/nix-ghc-wasm-flake) tracks how far GHC's WebAssembly support has got in nixpkgs, and gives you an experimental preview of it before it's merged.
 
 @tracker
 
@@ -96,7 +96,7 @@ Claude Opus 5.5 and Claude Fable 5.1 have been working hard this weekend as well
 ---
 
 @class thanks
-@qr https://github.com/purefunsolutions/nix-ghc-wasm-flake/tree/initial
+@qr https://github.com/purefunsolutions/nix-ghc-wasm-flake
 
 # Thank you
 
@@ -109,6 +109,6 @@ Most of what you've seen is other people's work; the hard parts were done long b
 If you want to try it, this is all it takes, though with no binary cache yet it builds GHC from source:
 
 ```
-nix build github:purefunsolutions/nix-ghc-wasm-flake/initial#munihac2026presentation
+nix build github:purefunsolutions/nix-ghc-wasm-flake#munihac2026presentation
 open result/index.html
 ```
