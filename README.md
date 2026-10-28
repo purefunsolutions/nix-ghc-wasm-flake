@@ -7,6 +7,9 @@ devshell. This repository also tracks the upstream pull requests in nixpkgs
 and GHC needed to make this work, and aims to support upstream development of
 the GHC WASM backend.
 
+The [slides of the MuniHac 2026 lightning talk](https://purefunsolutions.github.io/nix-ghc-wasm-flake-munihac2026/)
+about this work are themselves built by this flake: `nix build .#munihac2026presentation`.
+
 ## Upstream tracker
 
 Unmerged changes this work needs or carries, by us and by others. The nixpkgs branch
