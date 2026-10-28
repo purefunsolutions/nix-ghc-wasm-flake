@@ -1,17 +1,50 @@
-# GitLab CI: the flake's checks, evaluation only, and on master a push to
-# the public GitHub repository.
+# GitLab CI: the flake's checks, evaluation only; the wasm GHCs and their
+# hello worlds, built and run on x86_64-linux; and on master a push to the
+# public GitHub repository.
 stages:
   - ci
+  - build
   - publish
-# Every system evaluated, nothing built: the wasm GHCs take hours per
-# system, so their builds stay on our machines (scripts/build.sh) for now.
+# Every system evaluated, nothing built.
 checks:
   stage: ci
   interruptible: true
   script:
     - nix flake check --all-systems --no-build --no-update-lock-file -L
+# One job per GHC version, in the build stage, so they start only after
+# the checks passed: the wasm compiler, then the three hello worlds built
+# with it, then their checks, which run each under wasmtime and compare
+# its output. x86_64-linux only for now. A job that builds its GHC from
+# source takes hours, and the runner runs two jobs at a time; what the
+# runner built, later jobs take from its binary cache.
+.ghc:
+  stage: build
+  interruptible: true
+  timeout: 6h
+  variables:
+    # At most 12 compiler processes per build: with all 24 cores, a GHC
+    # build ran the worker VM (24 GiB) out of memory.
+    NIX_CONFIG: "cores = 12"
+  script:
+    - ghc=$(nix build --no-link --print-out-paths -L ".#packages.x86_64-linux.wasm-$GHC.out")
+    - $ghc/bin/wasm32-unknown-wasip1-ghc --version
+    - nix build --no-link -L ".#packages.x86_64-linux.hello-$GHC" ".#packages.x86_64-linux.hello-pure-$GHC" ".#packages.x86_64-linux.hello-th-$GHC"
+    - nix build --no-link -L ".#checks.x86_64-linux.hello-$GHC" ".#checks.x86_64-linux.hello-pure-$GHC" ".#checks.x86_64-linux.hello-th-$GHC"
+ghc912:
+  extends: .ghc
+  variables:
+    GHC: ghc912
+ghc914:
+  extends: .ghc
+  variables:
+    GHC: ghc914
+ghcHEAD:
+  extends: .ghc
+  variables:
+    GHC: ghcHEAD
 # Pushes master to the public GitHub repository, in the publish stage, so
-# only after the ci stage passed: a broken master never reaches GitHub.
+# only after the checks and the GHC builds passed: a broken master never
+# reaches GitHub.
 #
 # GITHUB_DEPLOY_KEY_B64 is a masked, protected CI variable holding the
 # base64 of an ed25519 private key whose public half is a deploy key with

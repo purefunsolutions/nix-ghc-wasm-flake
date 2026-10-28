@@ -51,8 +51,10 @@ and system, so build one system at a time.
   findings.
 - `README.md`: the overview and the upstream tracker.
 - `.gitlab-ci.yml`: GitLab CI. `checks` evaluates the flake for every
-  system and builds nothing. `publish-github`, on master once that
-  passed, pushes master to github.com/purefunsolutions/nix-ghc-wasm-flake
+  system and builds nothing. Then `ghc912`, `ghc914` and `ghcHEAD` each
+  build their wasm GHC for x86_64-linux, the hello worlds with it, and the
+  hello worlds' checks. `publish-github`, on master once those passed,
+  pushes master to github.com/purefunsolutions/nix-ghc-wasm-flake
   with the deploy key in the masked, protected CI variable
   `GITHUB_DEPLOY_KEY_B64`.
 
