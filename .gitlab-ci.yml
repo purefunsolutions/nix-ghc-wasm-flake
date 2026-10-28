@@ -1,0 +1,36 @@
+# GitLab CI: on master, a push to the public GitHub repository. The
+# flake's checks join the ci stage together with the flake.
+stages:
+  - ci
+  - publish
+# Pushes master to the public GitHub repository, in the publish stage, so
+# only after the ci stage passed: a broken master never reaches GitHub.
+#
+# GITHUB_DEPLOY_KEY_B64 is a masked, protected CI variable holding the
+# base64 of an ed25519 private key whose public half is a deploy key with
+# write access on the GitHub repository. The remote and GitHub's host key
+# are public, so they belong in this file, which is mirrored too.
+publish-github:
+  stage: publish
+  interruptible: false
+  resource_group: github-mirror
+  variables:
+    GIT_DEPTH: "0"
+    GITHUB_REMOTE: "git@github.com:purefunsolutions/nix-ghc-wasm-flake.git"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+  script:
+    - install -d -m700 "$HOME/.github-mirror"
+    - printf '%s' "$GITHUB_DEPLOY_KEY_B64" | base64 -d > "$HOME/.github-mirror/key"
+    - chmod 600 "$HOME/.github-mirror/key"
+    # GitHub's published ed25519 host key; refresh it from
+    # https://api.github.com/meta.
+    - echo "github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl" > "$HOME/.github-mirror/known_hosts"
+    # The runner fetches only the pipeline's ref: without this, there are
+    # no tags, and --tags below pushes none.
+    - git fetch --no-recurse-submodules origin '+refs/tags/*:refs/tags/*'
+    # refs/heads/ spelled out: the runner pushes a detached HEAD, so git
+    # can't infer the remote ref's type.
+    - git -c core.sshCommand="ssh -i $HOME/.github-mirror/key -o IdentitiesOnly=yes -o UserKnownHostsFile=$HOME/.github-mirror/known_hosts -o StrictHostKeyChecking=yes" push "$GITHUB_REMOTE" HEAD:refs/heads/master --tags
+  after_script:
+    - rm -rf "$HOME/.github-mirror"
