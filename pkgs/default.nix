@@ -29,8 +29,8 @@
         presentation-wasm = wasm.haskell.packages.ghc914.callPackage ./munihac2026presentation/wasm.nix { };
       };
 
-      # Runs each program under wasmtime with the arguments "a b" and
-      # compares its output.
+      # Runs each program under wasmtime with the arguments "a b", shows its
+      # output and compares it.
       runEach =
         expected:
         lib.mapAttrs (
@@ -38,6 +38,7 @@
           pkgs.runCommand "run-${name}" { nativeBuildInputs = [ pkgs.wasmtime ]; } ''
             export HOME="$TMPDIR"
             wasmtime run ${lib.getExe drv} a b > output.txt
+            cat output.txt
             diff -u ${expected} output.txt
             touch "$out"
           ''
